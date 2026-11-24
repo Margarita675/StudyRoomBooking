@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Аудитории — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <div class="section-head">
+        <h1>Аудитории</h1>
+        {% if user.is_admin %}
+            <a href="{% url 'rooms:create' %}" class="btn btn-primary">Добавить аудиторию</a>
+        {% endif %}
+    </div>
+    <form method="get" class="filters">
+        <div class="form-field">
+            <label for="building">Корпус</label>
+            <input type="text" id="building" name="building" value="{{ filters.building|default:'' }}">
+        </div>
+        <div class="form-field">
+            <label for="room_type">Тип</label>
+            <select id="room_type" name="room_type">
+                <option value="">Любой</option>
+                {% for value, label in types %}
+                    <option value="{{ value }}" {% if filters.room_type == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="min_capacity">Мин. вместимость</label>
+            <input type="number" id="min_capacity" name="min_capacity" min="1" value="{{ filters.min_capacity|default:'' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Фильтровать</button>
+        <a href="{% url 'rooms:list' %}" class="btn btn-outline">Сбросить</a>
+    </form>
+    <div class="cards-grid">
+        {% for room in page_obj %}
+            <article class="card">
+                <h3><a href="{% url 'rooms:detail' room.pk %}">{{ room.building }}-{{ room.number }}</a></h3>
+                <p class="muted">{{ room.name }}</p>
+                <ul class="muted">
+                    <li>Вместимость: {{ room.capacity }} чел.</li>
+                    <li>Тип: {{ room.get_room_type_display }}</li>
+                    <li>Этаж: {{ room.floor }}</li>
+                    <li>Статус: {{ room.get_status_display }}</li>
+                </ul>
+                {% if room.equipment.all %}
+                    <p class="muted small">Оборудование: {% for eq in room.equipment.all %}{{ eq.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                {% endif %}
+                <a href="{% url 'rooms:detail' room.pk %}" class="btn btn-outline">Открыть</a>
+            </article>
+        {% empty %}
+            <p class="muted">Аудитории не найдены.</p>
+        {% endfor %}
+    </div>
+    {% if page_obj.has_other_pages %}
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Назад</a>
+            {% endif %}
+            <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Далее</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+</section>
+{% endblock %}

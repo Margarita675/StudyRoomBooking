@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}StudyRoomBooking — бронирование аудиторий{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Система бронирования аудиторий</h1>
+    <p>Найдите свободную аудиторию по дате, времени, вместимости и оборудованию — и забронируйте её за минуту.</p>
+    <div class="hero-actions">
+        <a href="{% url 'rooms:search' %}" class="btn btn-primary">Найти аудиторию</a>
+        <a href="{% url 'rooms:list' %}" class="btn btn-outline">Все аудитории</a>
+    </div>
+</section>
+<section class="features">
+    <div class="feature-card">
+        <h3>Поиск по параметрам</h3>
+        <p>Вместимость, тип аудитории, корпус, проектор, компьютер и другое оборудование.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Бронирование</h3>
+        <p>Серверная проверка конфликтов: две брони не могут пересекаться по времени.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Расписание</h3>
+        <p>Расписание каждой аудитории по датам со статусами броней.</p>
+    </div>
+</section>
+<section class="section">
+    <h2>Популярные аудитории</h2>
+    <div class="cards-grid">
+        {% for room in rooms %}
+            <article class="card">
+                <h3><a href="{% url 'rooms:detail' room.pk %}">{{ room.building }}-{{ room.number }}</a></h3>
+                <p class="muted">{{ room.name }}</p>
+                <ul class="muted">
+                    <li>Вместимость: {{ room.capacity }} чел.</li>
+                    <li>Тип: {{ room.get_room_type_display }}</li>
+                </ul>
+                <a href="{% url 'rooms:detail' room.pk %}" class="btn btn-outline">Открыть карточку</a>
+            </article>
+        {% empty %}
+            <p class="muted">Аудиторий пока нет.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

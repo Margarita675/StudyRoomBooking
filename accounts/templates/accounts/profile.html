@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Профиль — StudyRoomBooking{% endblock %}
+{% block content %}
+<section>
+    <h1>Профиль пользователя</h1>
+    <div class="card profile-card">
+        <ul class="profile-list">
+            <li><strong>Имя пользователя:</strong> {{ user.username }}</li>
+            <li><strong>ФИО:</strong> {{ user.full_name|default:'—' }}</li>
+            <li><strong>Email:</strong> {{ user.email }}</li>
+            <li><strong>Роль:</strong> {{ user.get_role_display }}</li>
+            <li><strong>Регистрация:</strong> {{ user.date_joined|date:'d.m.Y' }}</li>
+        </ul>
+        <ul class="profile-list">
+            <li><strong>Питомцев:</strong> {{ pets_count }}</li>
+            <li><strong>Записей в дневниках:</strong> {{ entries_count }}</li>
+            <li><strong>Процедур:</strong> {{ procedures_count }}</li>
+        </ul>
+    </div>
+    <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary">Редактировать профиль</a>
+</section>
+{% endblock %}

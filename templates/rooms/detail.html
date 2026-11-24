@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}{{ room }} — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <h1>{{ room.building }}-{{ room.number }} «{{ room.name }}»</h1>
+    <p class="muted">Статус: {{ room.get_status_display }} · Тип: {{ room.get_room_type_display }}</p>
+    <div class="detail-grid">
+        <div class="card">
+            <h2>Характеристики</h2>
+            <table class="table">
+                <tr><th>Корпус</th><td>{{ room.building }}</td></tr>
+                <tr><th>Этаж</th><td>{{ room.floor }}</td></tr>
+                <tr><th>Вместимость</th><td>{{ room.capacity }} чел.</td></tr>
+                <tr><th>Тип</th><td>{{ room.get_room_type_display }}</td></tr>
+                <tr><th>Описание</th><td>{{ room.description|default:'—' }}</td></tr>
+            </table>
+        </div>
+        <div class="card">
+            <h2>Оборудование</h2>
+            {% if room.room_equipment.all %}
+                <table class="table">
+                    {% for row in room.room_equipment.all %}
+                        <tr><td>{{ row.equipment.name }}</td><td>{{ row.quantity }} шт.</td></tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p class="muted">Оборудование не указано.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% if room.is_available %}
+        <a href="{% url 'bookings:create' room.pk %}" class="btn btn-primary">Забронировать</a>
+    {% else %}
+        <p class="error-text">Аудитория недоступна для бронирования.</p>
+    {% endif %}
+    {% if user.is_admin %}
+        <a href="{% url 'rooms:edit' room.pk %}" class="btn btn-outline">Редактировать</a>
+        <a href="{% url 'rooms:delete' room.pk %}" class="btn btn-danger">Удалить</a>
+        <a href="{% url 'bookings:room_schedule' room.pk %}" class="btn btn-outline">Расписание</a>
+    {% endif %}
+    <h2>Занятость сегодня ({{ today|date:'d.m.Y' }})</h2>
+    {% if day_bookings %}
+        <table class="table">
+            <thead><tr><th>Время</th><th>Статус</th></tr></thead>
+            <tbody>
+            {% for booking in day_bookings %}
+                <tr><td>{{ booking.time_start }}–{{ booking.time_end }}</td><td>{{ booking.get_status_display }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">На сегодня активных броней нет.</p>
+    {% endif %}
+</section>
+{% endblock %}

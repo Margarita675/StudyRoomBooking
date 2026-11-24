@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section form-page">
+    <h1>{{ title }}</h1>
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+                {% if field.help_text %}<p class="muted small">{{ field.help_text }}</p>{% endif %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}<p class="error-text">{{ form.non_field_errors }}</p>{% endif %}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="{% url 'rooms:list' %}" class="btn btn-outline">Отмена</a>
+    </form>
+</section>
+{% endblock %}

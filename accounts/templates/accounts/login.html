@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Вход — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="auth-card">
+    <h1>Вход</h1>
+    <form method="post" id="login-form" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}<p class="error-text">{{ form.non_field_errors }}</p>{% endif %}
+        <button type="submit" class="btn btn-primary btn-full">Войти</button>
+    </form>
+    <p class="auth-alt"><a href="{% url 'accounts:forgot_password' %}">Забыли пароль?</a> ·
+       <a href="{% url 'accounts:register' %}">Регистрация</a></p>
+</section>
+{% endblock %}

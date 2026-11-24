@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Оборудование — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <div class="section-head">
+        <h1>Оборудование</h1>
+        <a href="{% url 'rooms:equipment_create' %}" class="btn btn-primary">Добавить оборудование</a>
+    </div>
+    <table class="table">
+        <thead><tr><th>Название</th><th>Описание</th><th>Аудитории</th><th></th></tr></thead>
+        <tbody>
+        {% for eq in equipment_list %}
+            <tr>
+                <td>{{ eq.name }}</td>
+                <td>{{ eq.description|default:'—' }}</td>
+                <td>{% for room in eq.rooms.all %}{{ room.building }}-{{ room.number }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td>
+                <td>
+                    <a href="{% url 'rooms:equipment_edit' eq.pk %}" class="btn btn-outline btn-sm">Изменить</a>
+                    <a href="{% url 'rooms:equipment_delete' eq.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4" class="muted">Оборудования нет.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Удаление аудитории — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <h1>Удалить аудиторию?</h1>
+    <p>{{ room }} — вместе с ней будут удалены её бронирования.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <a href="{% url 'rooms:detail' room.pk %}" class="btn btn-outline">Отмена</a>
+    </form>
+</section>
+{% endblock %}

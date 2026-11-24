@@ -1,0 +1,23 @@
+%% Sequence Diagram — бронирование с проверкой конфликтов
+sequenceDiagram
+    actor С as Студент
+    participant SF as Форма бронирования
+    participant BV as BookingForm/View
+    participant DB as PostgreSQL (bookings_booking)
+    actor А as Администратор
+
+    С->>SF: Дата, время, цель
+    SF->>BV: POST /bookings/room/<id>/
+    BV->>BV: clean(): time_start < time_end, дата не прошедшая
+    BV->>DB: SELECT пересечений (start < other.end AND end > other.start)
+    alt Пересечение найдено
+        DB-->>BV: строки конфликтов
+        BV-->>С: Ошибка «Аудитория уже занята…», бронь не сохранена
+    else Конфликтов нет
+        BV->>DB: INSERT booking (status=pending)
+        DB-->>BV: id брони
+        BV-->>С: «Бронь создана и ожидает подтверждения»
+        BV-->>А: Бронь в списке администратора
+        А->>BV: POST action=confirm
+        BV->>DB: UPDATE status=confirmed (с повторной проверкой конфликтов)
+    end

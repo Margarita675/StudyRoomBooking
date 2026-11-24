@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Бронь #{{ booking.pk }} — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <h1>Бронирование #{{ booking.pk }}</h1>
+    <p><span class="badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span></p>
+    <table class="table">
+        <tr><th>Аудитория</th><td><a href="{% url 'rooms:detail' booking.room.pk %}">{{ booking.room }}</a></td></tr>
+        <tr><th>Дата</th><td>{{ booking.date|date:'d.m.Y' }}</td></tr>
+        <tr><th>Время</th><td>{{ booking.time_start }}–{{ booking.time_end }}</td></tr>
+        <tr><th>Цель</th><td>{{ booking.purpose }}</td></tr>
+        <tr><th>Комментарий</th><td>{{ booking.comment|default:'—' }}</td></tr>
+        <tr><th>Создано</th><td>{{ booking.created_at|date:'d.m.Y H:i' }}</td></tr>
+    </table>
+    {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+        <a href="{% url 'bookings:cancel' booking.pk %}" class="btn btn-danger">Отменить бронь</a>
+    {% endif %}
+    <a href="{% url 'bookings:my' %}" class="btn btn-outline">Назад</a>
+</section>
+{% endblock %}

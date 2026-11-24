@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Мои брони — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <h1>Мои бронирования</h1>
+    <form method="get" class="filters">
+        <div class="form-field">
+            <label for="status">Статус</label>
+            <select id="status" name="status">
+                <option value="">Все</option>
+                {% for value, label in statuses %}
+                    <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Фильтровать</button>
+    </form>
+    {% if bookings %}
+        <table class="table">
+            <thead><tr><th>Аудитория</th><th>Дата</th><th>Время</th><th>Цель</th><th>Статус</th><th></th></tr></thead>
+            <tbody>
+            {% for booking in bookings %}
+                <tr>
+                    <td><a href="{% url 'rooms:detail' booking.room.pk %}">{{ booking.room.building }}-{{ booking.room.number }}</a></td>
+                    <td>{{ booking.date|date:'d.m.Y' }}</td>
+                    <td>{{ booking.time_start }}–{{ booking.time_end }}</td>
+                    <td>{{ booking.purpose }}</td>
+                    <td><span class="badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span></td>
+                    <td>
+                        <a href="{% url 'bookings:detail' booking.pk %}" class="btn btn-outline btn-sm">Подробнее</a>
+                        {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                            <a href="{% url 'bookings:cancel' booking.pk %}" class="btn btn-danger btn-sm">Отменить</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">Бронирований нет.</p>
+    {% endif %}
+</section>
+{% endblock %}

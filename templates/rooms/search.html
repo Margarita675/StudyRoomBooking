@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Поиск аудиторий — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <h1>Поиск свободных аудиторий</h1>
+    <form method="get" class="filters">
+        <div class="form-field">
+            <label for="date">Дата</label>
+            <input type="date" id="date" name="date" min="{{ today }}" value="{{ request.GET.date|default:'' }}">
+        </div>
+        <div class="form-field">
+            <label for="time_start">Время начала</label>
+            <input type="time" id="time_start" name="time_start" value="{{ request.GET.time_start|default:'' }}">
+        </div>
+        <div class="form-field">
+            <label for="time_end">Время окончания</label>
+            <input type="time" id="time_end" name="time_end" value="{{ request.GET.time_end|default:'' }}">
+        </div>
+        <div class="form-field">
+            <label for="capacity">Вместимость от</label>
+            <input type="number" id="capacity" name="capacity" min="1" value="{{ request.GET.capacity|default:'' }}">
+        </div>
+        <div class="form-field">
+            <label for="room_type">Тип</label>
+            <select id="room_type" name="room_type">
+                <option value="">Любой</option>
+                {% for value, label in types %}
+                    <option value="{{ value }}" {% if request.GET.room_type == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="building">Корпус</label>
+            <input type="text" id="building" name="building" value="{{ request.GET.building|default:'' }}">
+        </div>
+        <fieldset class="form-field">
+            <legend>Оборудование</legend>
+            {% for eq in equipment_list %}
+                <label class="check-inline">
+                    <input type="checkbox" name="equipment" value="{{ eq.pk }}">
+                    {{ eq.name }}
+                </label>
+            {% endfor %}
+        </fieldset>
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </form>
+    {% if error %}<p class="error-text">{{ error }}</p>{% endif %}
+    {% if searched %}
+        <h2>Результаты</h2>
+        {% if results %}
+            <div class="cards-grid">
+                {% for room in results %}
+                    <article class="card">
+                        <h3><a href="{% url 'rooms:detail' room.pk %}">{{ room.building }}-{{ room.number }}</a></h3>
+                        <p class="muted">{{ room.name }} · {{ room.capacity }} чел. · {{ room.get_room_type_display }}</p>
+                        <a href="{% url 'bookings:create' room.pk %}?date={{ request.GET.date }}&time_start={{ request.GET.time_start }}&time_end={{ request.GET.time_end }}"
+                           class="btn btn-primary">Забронировать</a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="muted">Свободных аудиторий по заданным параметрам нет.</p>
+        {% endif %}
+    {% endif %}
+</section>
+{% endblock %}

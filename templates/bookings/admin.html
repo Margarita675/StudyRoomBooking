@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Управление бронями — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <h1>Управление бронированиями</h1>
+    <form method="get" class="filters">
+        <div class="form-field">
+            <label for="status">Статус</label>
+            <select id="status" name="status">
+                <option value="">Все</option>
+                {% for value, label in statuses %}
+                    <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Фильтровать</button>
+    </form>
+    {% if bookings %}
+        <table class="table">
+            <thead><tr><th>Пользователь</th><th>Аудитория</th><th>Дата, время</th><th>Цель</th><th>Статус</th><th>Действия</th></tr></thead>
+            <tbody>
+            {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.user.username }}</td>
+                    <td><a href="{% url 'rooms:detail' booking.room.pk %}">{{ booking.room.building }}-{{ booking.room.number }}</a></td>
+                    <td>{{ booking.date|date:'d.m.Y' }} {{ booking.time_start }}–{{ booking.time_end }}</td>
+                    <td>{{ booking.purpose }}</td>
+                    <td><span class="badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span></td>
+                    <td>
+                        {% if booking.status == 'pending' %}
+                            <form method="post" class="inline-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="booking_id" value="{{ booking.pk }}">
+                                <button name="action" value="confirm" class="btn btn-primary btn-sm">Подтвердить</button>
+                                <button name="action" value="reject" class="btn btn-danger btn-sm">Отклонить</button>
+                            </form>
+                        {% elif booking.status == 'confirmed' %}
+                            <form method="post" class="inline-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="booking_id" value="{{ booking.pk }}">
+                                <button name="action" value="cancel" class="btn btn-outline btn-sm">Отменить</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">Броней нет.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+%% Class Diagram — StudyRoomBooking
+classDiagram
+    class User {
+        +id
+        +username: str
+        +email: str
+        +role: str
+        +full_name: str
+        +is_admin() bool
+    }
+    class PasswordResetToken {
+        +token_hash: str
+        +expires_at: datetime
+        +is_used: bool
+        +is_valid() bool
+    }
+    class Room {
+        +number: str
+        +name: str
+        +building: str
+        +floor: int
+        +capacity: int
+        +room_type: str
+        +status: str
+        +is_available() bool
+    }
+    class Equipment {
+        +name: str
+        +description: str
+    }
+    class RoomEquipment {
+        +quantity: int
+    }
+    class Booking {
+        +date: date
+        +time_start: time
+        +time_end: time
+        +purpose: str
+        +status: str
+        +conflicts_with_existing() QuerySet
+        +clean() void
+    }
+    User "1" --> "*" Booking : оформляет
+    Room "1" --> "*" Booking : резервируется
+    Room "*" -- "*" Equipment : через
+    RoomEquipment --> Room
+    RoomEquipment --> Equipment
+    User "1" --> "*" PasswordResetToken

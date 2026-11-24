@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Бронирование — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section form-page">
+    <h1>Бронирование аудитории {{ room.building }}-{{ room.number }}</h1>
+    <p class="muted">{{ room.name }} · {{ room.capacity }} чел. · {{ room.get_room_type_display }}</p>
+    {% if request.GET.date %}
+        <p class="muted small">Из результатов поиска: {{ request.GET.date }} {{ request.GET.time_start }}–{{ request.GET.time_end }}</p>
+    {% endif %}
+    <form method="post" id="booking-form" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {% if not field.is_hidden %}{{ field.label_tag }}{% endif %}
+                {{ field }}
+                {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}<p class="error-text">{{ form.non_field_errors }}</p>{% endif %}
+        <button type="submit" class="btn btn-primary">Создать бронь</button>
+        <a href="{% url 'rooms:detail' room.pk %}" class="btn btn-outline">Отмена</a>
+    </form>
+</section>
+{% endblock %}

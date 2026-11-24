@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Регистрация — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="auth-card">
+    <h1>Регистрация</h1>
+    <form method="post" id="register-form" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}<small class="help-text">{{ field.help_text }}</small>{% endif %}
+                {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}<p class="error-text">{{ form.non_field_errors }}</p>{% endif %}
+        <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
+    </form>
+    <p class="auth-alt">Уже есть аккаунт? <a href="{% url 'accounts:login' %}">Войти</a></p>
+</section>
+{% endblock %}

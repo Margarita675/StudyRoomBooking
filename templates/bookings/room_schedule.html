@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Расписание {{ room }} — StudyRoomBooking{% endblock %}
+{% block content %}
+<section class="section">
+    <h1>Расписание: {{ room.building }}-{{ room.number }} «{{ room.name }}»</h1>
+    <form method="get" class="filters">
+        <div class="form-field">
+            <label for="date">Дата</label>
+            <input type="date" id="date" name="date" value="{{ filter_date }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Показать</button>
+    </form>
+    {% if bookings %}
+        <table class="table">
+            <thead><tr><th>Дата</th><th>Время</th><th>Статус</th><th>Пользователь</th></tr></thead>
+            <tbody>
+            {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.date|date:'d.m.Y' }}</td>
+                    <td>{{ booking.time_start }}–{{ booking.time_end }}</td>
+                    <td><span class="badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span></td>
+                    <td>{{ booking.user.username }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">Броней нет.</p>
+    {% endif %}
+</section>
+{% endblock %}

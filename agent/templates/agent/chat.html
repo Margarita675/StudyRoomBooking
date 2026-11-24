@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}ИИ-помощник — StudyRoomBooking{% endblock %}
+
+{% block content %}
+<section class="agent-page">
+    <h1>🤖 ИИ-помощник</h1>
+    <p class="agent-note">
+        Помощник подскажет, как найти аудиторию, оформить бронирование,
+        посмотреть расписание или отменить свою бронь. История диалога
+        сохраняется в вашем личном кабинете.
+    </p>
+
+    {% if not agent_configured %}
+        <div class="message warning">
+            ИИ-агент ещё не настроен: в файле <code>.env</code> не заполнены
+            параметры <code>LLM_BASE_URL</code> и <code>LLM_MODEL</code>.
+            Спросите у преподавателя или посмотрите README (Тема 14).
+        </div>
+    {% endif %}
+
+    <div class="agent-chat" id="agent-chat" data-send-url="{% url 'agent:send' %}">
+        <div class="agent-messages" id="agent-messages">
+            {% for message in history %}
+                <div class="agent-msg {{ message.role }}">
+                    <span class="agent-who">{% if message.role == 'user' %}Вы{% else %}Помощник{% endif %}:</span>
+                    <span class="agent-text">{{ message.content }}</span>
+                </div>
+            {% empty %}
+                <div class="agent-msg assistant">
+                    <span class="agent-who">Помощник:</span>
+                    <span class="agent-text">Здравствуйте! Меня зовут Помощник StudyRoomBooking. Спросите, как найти свободную аудиторию или оформить бронь.</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <form id="agent-form" autocomplete="off">
+            {% csrf_token %}
+            <label class="sr-only" for="agent-input">Сообщение помощнику</label>
+            <input type="text" id="agent-input" name="message" maxlength="2000"
+                   placeholder="Например: как забронировать аудиторию на завтра с 10 до 12?"
+                   required>
+            <button type="submit" class="btn btn-primary" id="agent-send-btn">Отправить</button>
+        </form>
+
+        <p class="agent-tip">Сообщение можно отправить клавишей Enter.</p>
+    </div>
+
+    <form method="post" action="{% url 'agent:clear' %}" class="agent-clear-form">
+        {% csrf_token %}
+        <button type="submit" class="link-btn">Очистить историю диалога</button>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/agent.js' %}" defer></script>
+{% endblock %}

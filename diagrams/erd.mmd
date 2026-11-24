@@ -1,0 +1,53 @@
+%% ERD — StudyRoomBooking
+erDiagram
+    ACCOUNTS_USER ||--o{ BOOKINGS_BOOKING : "оформляет"
+    ACCOUNTS_USER ||--o{ ACCOUNTS_PASSWORDRESETTOKEN : "запрашивает"
+    ROOMS_ROOM ||--o{ BOOKINGS_BOOKING : "бронируется"
+    ROOMS_ROOM ||--|{ ROOMS_ROOMEQUIPMENT : "оснащена"
+    ROOMS_EQUIPMENT ||--|{ ROOMS_ROOMEQUIPMENT : "используется в"
+
+    ACCOUNTS_USER {
+        bigserial id PK
+        varchar username UK
+        varchar email UK
+        varchar role "user|admin"
+        varchar full_name
+    }
+    ACCOUNTS_PASSWORDRESETTOKEN {
+        bigserial id PK
+        char64 token_hash UK "SHA-256"
+        timestamptz expires_at "TTL 30 мин"
+        boolean is_used
+        bigint user_id FK
+    }
+    ROOMS_ROOM {
+        bigserial id PK
+        varchar number UK
+        varchar name
+        varchar building
+        smallint floor "CHECK >= 0"
+        smallint capacity "CHECK > 0"
+        varchar room_type "CHECK тип"
+        varchar status "CHECK статус"
+    }
+    ROOMS_EQUIPMENT {
+        bigserial id PK
+        varchar name UK
+        text description
+    }
+    ROOMS_ROOMEQUIPMENT {
+        bigserial id PK
+        smallint quantity "CHECK > 0"
+        bigint room_id FK
+        bigint equipment_id FK
+    }
+    BOOKINGS_BOOKING {
+        bigserial id PK
+        date date
+        time time_start
+        time time_end "CHECK > time_start"
+        varchar purpose
+        varchar status "CHECK статус"
+        bigint room_id FK
+        bigint user_id FK
+    }

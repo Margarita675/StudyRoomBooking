@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Виртуальное окружение
+venv/
+.venv/
+env/
+
+# Django
+db.sqlite3
+*.log
+media/
+staticfiles/
+
+# Переменные окружения (Тема 3: секреты не хранятся в Git)
+.env
+
+# IDE
+.idea/
+.vscode/
